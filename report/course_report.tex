@@ -1,0 +1,172 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, fit}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+
+\title{ASIC 课程项目报告\\人体反应速率检测系统}
+\author{田毓同\quad 23307110048}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\clearpage
+
+\section{设计规划}
+
+\subsection{设计要求}
+本设计实现一个人体反应测试系统，主要要求如下：
+\begin{enumerate}
+  \item 使用四位八段数码管显示系统状态与测量结果。
+  \item 使用 START 与 REACT 两个按键控制测试流程。
+  \item START 后进入随机等待阶段，显示 \texttt{----}；随机等待结束后显示反应提示。
+  \item 记录用户反应时间，分辨率为 1 ms；有效反应范围为 $100\,\mathrm{ms}\le t\le 5000\,\mathrm{ms}$。
+  \item 过早按键或超出有效范围时显示 \texttt{Fail}。
+  \item 支持显示最近三次有效成绩的平均值。
+\end{enumerate}
+
+\subsection{设计思路}
+\input{section_2_2_design_idea.tex}
+
+\subsection{设计平台}
+
+\subsubsection{开发板和软件使用}
+开发板采用 ZYNQ-Z7020（\texttt{xc7z020clg484-2}），RTL综合与实现、仿真工具使用 Vivado 2019.1
+，并通过 JTAG 下载 bitstream 进行板级验证。
+项目代码同步整理在 GitHub 仓库 \url{https://github.com/juruo04/asic}。
+
+\subsubsection{设计流程}
+本项目流程为：先完成模块划分与信号交互协议设计，再分别实现各子模块，随后对各子模块进行独立仿真验证，最后搭建硬件电路、完成下板运行并观察实物结果。
+
+\section{设计实现}
+
+\subsection{框图介绍}
+\input{section_2_3_module_block_diagram.tex}
+\input{section_2_4_core_internal_block_diagram.tex}
+
+\subsection{各模块设计和验证（仿真激励和结果波形说明）}
+
+本系统采用模块化设计方式，将完整反应测试功能拆分为计时、随机等待、状态控制、历史统计和外设输出等若干子模块。各模块之间通过明确的控制信号和数据通路连接，便于分别编写测试平台观察波形。分模块验证时主要关注输入激励、状态或数据变化以及输出响应之间的时序关系，从而确认各子模块功能满足系统设计要求。
+
+\subsubsection{毫秒计数模块（\texttt{ms\_counter\_service}）}
+毫秒计数模块用于为随机等待时间和反应时间测量提供统一的毫秒级计数基准。模块输入包括系统时钟 \texttt{clk}、低有效复位 \texttt{rst\_n}、计数使能信号 \texttt{counter\_en} 和清零信号 \texttt{counter\_clr}，输出为当前毫秒计数值 \texttt{ms\_counter}。
+
+该模块本质上是一个带分频节拍的加法计数器。系统时钟首先被分频形成 1 ms 计数节拍，当 \texttt{counter\_en} 有效时，计数器在每个毫秒节拍到来时自增；当 \texttt{counter\_clr} 有效时，毫秒计数值和内部节拍计数均被清零。控制器在进入等待阶段或进入反应阶段时通过清零信号重新开始计时，因此同一个计数模块可以复用于随机等待计时和用户反应计时。
+
+该模块的仿真主要通过波形观察完成。测试平台中先给出复位信号，检查复位后 \texttt{ms\_counter} 是否回到 0；随后拉高 \texttt{counter\_en}，观察计数值是否随毫秒节拍递增；最后拉高 \texttt{counter\_clr}，观察计数是否立即回到 0。仿真波形重点观察以下信号：
+\begin{enumerate}
+  \item \texttt{rst\_n} 释放前后 \texttt{ms\_counter} 的复位行为；
+  \item \texttt{counter\_en} 有效期间计数值的递增过程；
+  \item \texttt{counter\_clr} 有效时计数值清零的时序。
+\end{enumerate}
+
+\subsubsection{随机等待模块（\texttt{lfsr\_random\_service}）}
+随机等待模块用于生成每轮测试开始后的随机等待时间，使用户无法预判反应提示出现的时刻。模块输入为系统时钟、复位和随机数请求信号 \texttt{req\_random}，输出为随机数有效信号 \texttt{random\_valid} 以及映射后的等待时间 \texttt{random\_delay\_ms}。
+
+本设计采用线性反馈移位寄存器（LFSR）产生伪随机序列。LFSR 每个时钟周期递推一次，其状态更新可抽象表示为
+\[
+x_{k+1}=A x_k,
+\]
+其中 $x_k$ 为当前 LFSR 状态，$A$ 由反馈抽头决定。模块在收到 \texttt{req\_random} 请求后，将当前伪随机状态映射到 $[\texttt{WAIT\_MIN\_MS},\texttt{WAIT\_MAX\_MS}]$ 区间内，作为本轮随机等待时间输出。为了降低固定初始种子带来的可预测性，模块内部还引入自由运行计数器参与扰动，使用户按下 START 的具体时刻能够影响最终输出。
+
+随机等待模块仿真中每隔 $10\,\mu s$ 给出一次 \texttt{req\_random} 请求脉冲。波形显示 \texttt{random\_valid} 能够在请求后给出有效响应，\texttt{random\_delay\_ms} 随请求更新且处于设定范围内，模块工作正常。
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{randomtb.png}
+  \caption{随机等待模块仿真波形}
+  \label{fig:random-service-waveform}
+\end{figure}
+
+\subsubsection{历史平均模块（\texttt{score\_history\_avg}）}
+历史平均模块用于保存最近三次有效反应成绩，并计算其平均值供 AVG 状态显示。模块输入包括写入有效信号 \texttt{push\_valid} 和本次有效反应时间 \texttt{push\_time\_ms}，输出包括平均值有效标志 \texttt{avg\_valid} 和平均反应时间 \texttt{avg\_time\_ms}。
+
+该模块采用滚动窗口结构保存历史成绩。当 \texttt{push\_valid} 有效时，模块将本次成绩写入历史队列；若已有三次成绩，则新成绩写入后会淘汰最早一次成绩。只有控制器判定为有效反应并产生 \texttt{score\_push\_valid} 时，历史模块才会更新，因此提前按键、过短反应和超时失败等无效结果不会进入历史平均统计。
+
+该模块仿真时依次输入多组有效成绩，观察平均值是否随样本数量正确变化；随后输入第四组有效成绩，观察最旧数据是否被替换。对于失败场景，控制器不会给出写入有效脉冲，因此历史模块输入端保持 \texttt{push\_valid}=0，波形上可看到历史平均值不会因失败结果而改变。仿真波形重点观察：
+\begin{enumerate}
+  \item \texttt{push\_valid} 有效时历史数据和平均值的更新；
+  \item 输入 1、2、3 组成绩时 \texttt{avg\_time\_ms} 的变化；
+  \item 无效成绩未写入时平均值保持不变。
+\end{enumerate}
+
+\subsubsection{控制器模块（\texttt{reaction\_controller}）}
+控制器模块是本系统的状态机核心，负责根据 START、REACT 按键脉冲、随机等待完成标志和毫秒计数值决定系统状态转移，并产生各子模块所需的控制信号。其主要输出包括随机数请求 \texttt{req\_random}、计数器清零 \texttt{counter\_clr}、计数器使能 \texttt{counter\_en}、成绩写入有效 \texttt{score\_push\_valid}、失败码 \texttt{fail\_code} 和当前反应时间 \texttt{reaction\_time\_ms}。
+
+控制器状态机包含 \texttt{IDLE}、\texttt{PREPARE}、\texttt{WAIT}、\texttt{REACT}、\texttt{FINISH}、\texttt{AVG} 和 \texttt{FAIL} 七个状态。用户按下 START 后，控制器进入 \texttt{PREPARE} 并请求随机等待时间；随机数有效后进入 \texttt{WAIT}，此时计数器开始记录等待时间。若等待阶段提前按下 REACT，则进入失败状态；若等待时间达到随机目标值，则进入 \texttt{REACT} 并重新开始计反应时间。用户在有效时间范围内按下 REACT 时进入 \texttt{FINISH} 并写入成绩；若反应时间小于最小阈值或超过最大阈值，则进入 \texttt{FAIL}。
+
+控制器仿真采用固定输入激励观察状态转移波形。测试平台中将随机等待时间固定为 $1234\,\mathrm{ms}$，在 \texttt{WAIT} 阶段手动使 \texttt{ms\_counter} 每个时钟周期增加 $10\,\mathrm{ms}$，从而压缩仿真时间并清晰展示状态变化。仿真覆盖正常流程、等待阶段提前按键、小于最小反应时间按键以及超过最大反应时间按键四种情况。波形中重点观察 \texttt{state}、\texttt{start\_pulse}、\texttt{react\_pulse}、\texttt{ms\_counter}、\texttt{counter\_clr}、\texttt{counter\_en}、\texttt{fail\_code} 和 \texttt{score\_push\_valid} 的对应关系。
+
+\subsubsection{按键去抖模块（\texttt{button\_debounce\_pulse}）}
+按键去抖模块用于将板上机械按键输入转换为稳定的单周期控制脉冲。
+
+\texttt{button\_debounce\_pulse} 模块用于处理机械按键抖动。原始按键信号首先经过同步寄存器进入系统时钟域，随后通过稳定计数判断按键电平是否已经保持足够长时间。当检测到一次稳定按下时，模块输出单周期 \texttt{btn\_press\_pulse}，供控制器作为 START 或 REACT 事件使用。该模块仿真时通过构造抖动输入和稳定输入，观察只有稳定按下后才产生一个单周期脉冲。
+
+\subsubsection{数码管显示模块（\texttt{seg7\_display\_driver}）}
+\texttt{seg7\_display\_driver} 模块根据系统状态、反应时间、平均时间和历史有效标志产生四位八段数码管的段选与位选信号。在 \texttt{IDLE} 状态显示 \texttt{0000}；在 \texttt{PREPARE} 和 \texttt{WAIT} 状态显示 \texttt{----}；在 \texttt{REACT} 状态显示 \texttt{1111} 作为反应提示；在 \texttt{FINISH} 状态显示本次反应时间；在 \texttt{AVG} 状态显示最近三次有效成绩平均值；在 \texttt{FAIL} 状态显示 \texttt{FAIL}。对于数值显示，模块先将二进制时间值拆分为十进制千、百、十、个位，再分别查表生成段码。显示模块仿真时依次切换各个状态，观察段选信号 \texttt{seg\_a}--\texttt{seg\_dp} 与位选信号 \texttt{dig1}--\texttt{dig4} 的输出波形是否符合状态分类。
+
+\subsubsection{蜂鸣器模块（\texttt{buzzer\_driver}）}
+\texttt{buzzer\_driver} 模块用于提供声音提示。由于蜂鸣器由三极管和电阻驱动，可按无源蜂鸣器方式输出短时间方波信号。模块检测系统状态是否发生变化，只要 \texttt{state} 与上一拍不同，就触发一次固定时长的短促蜂鸣；若状态保持不变，则不会重复触发。仿真时通过依次切换状态观察 \texttt{buzzer\_pwm}，确认每次状态跳变均产生相同的短时提示波形。
+
+\subsection{综合与实现}
+\input{section_4_6_implementation_results.tex}
+
+\subsection{静态时序结果分析}
+根据实现后时序报告，主时钟 \texttt{clk\_50m} 约束满足，
+关键指标为 \texttt{WNS>0}、\texttt{TNS=0}，说明设计满足 50 MHz 运行要求。
+
+\section{FPGA 系统介绍、下载实现和调试，测试游戏过程}
+
+本系统在 ZYNQ-Z7020 开发板上完成验证，START、REACT 和复位按键使用板上按键输入，数码管和蜂鸣器驱动电路外接在面包板上实现，其中蜂鸣器通过三极管开关电路进行控制。
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.68\textwidth,height=0.58\textheight,keepaspectratio]{board.jpg}
+  \caption{开发板与面包板外接电路实物图}
+  \label{fig:board-external-circuit}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{IMP.png}
+  \caption{顶层连接实线部分的实现视图（IMP）}
+  \label{fig:top-solid-impl-view}
+\end{figure}
+
+完成 bitstream 生成后，通过 JTAG 将设计下载到开发板。上电后按 START 进入随机等待，
+待显示反应提示后按 REACT 记录反应时间。重复测试可观察 FAIL 判定与平均值显示逻辑。
+
+\section{设计总结}
+
+本项目完成了从需求到 RTL、仿真、综合实现和板级验证的完整流程。
+系统结构清晰，资源占用与功耗均较低，能够稳定满足课程要求。
+
+\section{个人体会}
+
+通过本项目，进一步理解了状态机驱动系统设计方法、模块化验证思路以及 FPGA 工程化实现流程。
+同时在实现阶段体会到约束、时序与板级连线一致性对最终效果的重要性。
+
+\section*{附：主要文件说明}
+\begin{longtable}{p{0.34\textwidth} p{0.60\textwidth}}
+\toprule
+文件路径 & 说明 \\
+\midrule
+\texttt{src/reaction\_system\_top.v} & 顶层模块，连接核心、显示、蜂鸣器与按键去抖 \\
+\texttt{src/reaction\_core.v} & 核心模块，集成状态机、随机、计数与历史平均 \\
+\texttt{src/reaction\_controller.v} & 控制状态机 \\
+\texttt{src/lfsr\_random\_service.v} & 随机等待时间生成模块 \\
+\texttt{src/ms\_counter\_service.v} & 毫秒计数模块 \\
+\texttt{src/score\_history\_avg.v} & 历史成绩与平均值计算模块 \\
+\texttt{src/seg7\_display\_driver.v} & 数码管显示驱动模块 \\
+\texttt{src/buzzer\_driver.v} & 蜂鸣器提示模块 \\
+\texttt{xdc/reaction\_system\_gpio1.xdc} & 引脚与时钟约束文件 \\
+\texttt{sim/*\_tb.v} & 各子模块仿真测试文件 \\
+\bottomrule
+\end{longtable}
+
+\end{document}

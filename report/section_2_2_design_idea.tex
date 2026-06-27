@@ -1,0 +1,69 @@
+% 子文件用法：在主 tex 中加入 \input{report/section_2_2_design_idea.tex}
+% 主 tex 导言区需要：\usepackage{tikz}
+% 主 tex 导言区需要：\usetikzlibrary{arrows.meta, positioning}
+
+
+
+本设计采用自顶向下的模块化设计方式，将 RTL 分为核心模块与外围交互模块两部分。核心模块负责状态转移、计时、历史记录和随机数生成等内部功能，并向外围显示模块提供数据与状态广播；外围模块接收核心状态并完成数码管显示、蜂鸣器提示，同时把按键控制输入经过去抖后反馈给核心模块。
+
+测试流程由状态机统一调度。用户按下 START 键后，系统进入随机等待阶段，数码管显示等待提示；随机等待时间到达后，系统进入可反应阶段，数码管显示反应提示并启动反应时间计数。若用户在有效时间范围内按下 REACT 键，则系统记录并显示反应时间；若用户过早按键、反应时间小于最小阈值或超过最大阈值，则进入失败状态并显示 Fail。测试结束后再次按下 START 键显示最近三次有效成绩的平均值，再次按 START 开始下一轮测试。
+
+随机等待时间由 LFSR 伪随机序列产生。为避免每次上电后完全固定、可预测的等待序列，随机模块在每次请求随机数时混入自由运行计数器的当前值。该计数器由系统时钟驱动，用户按下 START 的实际时刻会影响采样值，因此即使初始种子固定，每轮测试的等待时间也会受到人工按键时序扰动，从而降低可预测性。
+
+% \subsubsection{反应测试状态机设计}
+
+% 状态机包含 \texttt{IDLE}、\texttt{PREPARE}、\texttt{WAIT}、\texttt{REACT}、\texttt{FINISH}、\texttt{AVG} 和 \texttt{FAIL} 七个状态。状态转移关系如图~\ref{fig:reaction-fsm} 所示。
+
+% \begin{figure}[htbp]
+%   \centering
+%   \begin{tikzpicture}[
+%       >=Stealth,
+%       node distance=20mm and 30mm,
+%       state/.style={draw, rounded corners, minimum width=27mm, minimum height=10mm, align=center},
+%       trans/.style={->, thick},
+%       note/.style={font=\small, align=center}
+%     ]
+
+%     \node[state] (idle) {\texttt{IDLE}\\显示 0000};
+%     \node[state, right=of idle] (prepare) {\texttt{PREPARE}\\请求随机数};
+%     \node[state, right=of prepare] (wait) {\texttt{WAIT}\\显示 ----};
+%     \node[state, below=of wait] (react) {\texttt{REACT}\\显示 $||||$};
+%     \node[state, left=of react] (finish) {\texttt{FINISH}\\显示时间};
+%     \node[state, below=of finish] (avg) {\texttt{AVG}\\显示平均值};
+%     \node[state, below=of react] (fail) {\texttt{FAIL}\\显示 Fail};
+
+%     \draw[trans] (idle) -- node[note, above] {START} (prepare);
+%     \draw[trans] (prepare) -- node[note, above] {random\_valid\\锁存等待时间} (wait);
+%     \draw[trans] (wait) -- node[note, right] {随机等待到达\\清零计数器} (react);
+%     \draw[trans] (wait.east) -- ++(12mm,0) |- node[note, near start, right] {提前 REACT} (fail.east);
+
+%     \draw[trans] (react) -- node[note, above] {有效 REACT\\$100\,\mathrm{ms}\le t\le5000\,\mathrm{ms}$} (finish);
+%     \draw[trans] (react) -- node[note, right] {$t<100\,\mathrm{ms}$\\或 $t>5000\,\mathrm{ms}$} (fail);
+
+%     \draw[trans] (finish) -- node[note, left] {START} (avg);
+%     \draw[trans] (fail) -- node[note, below] {START} (avg);
+%     \draw[trans] (avg.west) -- ++(-12mm,0) |- node[note, near start, left] {START\\下一轮} (prepare.west);
+
+%   \end{tikzpicture}
+%   \caption{反应测试系统状态机}
+%   \label{fig:reaction-fsm}
+% \end{figure}
+
+% \begin{table}[htbp]
+%   \centering
+%   \caption{状态机状态说明}
+%   \label{tab:reaction-fsm-state}
+%   \begin{tabular}{c|l|l}
+%     \hline
+%     状态 & 显示内容 & 功能说明 \\
+%     \hline
+%     \texttt{IDLE} & \texttt{0000} & 空闲状态，等待 START 按键开始测试 \\
+%     \texttt{PREPARE} & 保持上一显示 & 请求并锁存一组随机等待时间 \\
+%     \texttt{WAIT} & \texttt{----} & 随机等待阶段，若提前按 REACT 则失败 \\
+%     \texttt{REACT} & \texttt{$||||$} & 允许用户反应，计数器记录反应时间 \\
+%     \texttt{FINISH} & 反应时间 & 有效反应结束，显示本次反应时间并写入历史记录 \\
+%     \texttt{AVG} & 平均时间或 \texttt{0000} & 显示最近三次有效成绩平均值，无成绩时显示 \texttt{0000} \\
+%     \texttt{FAIL} & \texttt{Fail} & 提前、过短或超时反应，等待 START 查看平均值 \\
+%     \hline
+%   \end{tabular}
+% \end{table}

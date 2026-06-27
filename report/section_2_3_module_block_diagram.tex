@@ -1,0 +1,112 @@
+% 子文件用法：在主 tex 中加入 \input{report/section_2_3_module_block_diagram.tex}
+% 主 tex 导言区需要：\usepackage{tikz}
+% 主 tex 导言区需要：\usepackage{graphicx}
+% 主 tex 导言区需要：\usetikzlibrary{arrows.meta, positioning, fit}
+
+\subsubsection{总体状态机}
+
+该状态机是系统测试流程的总控逻辑，统一描述从空闲、启动、随机等待、有效反应、结果显示到平均值查看的完整闭环。状态机包含 \texttt{IDLE}、\texttt{PREPARE}、\texttt{WAIT}、\texttt{REACT}、\texttt{FINISH}、\texttt{AVG} 和 \texttt{FAIL} 七个状态。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+      >=Stealth,
+      node distance=20mm and 30mm,
+      state/.style={draw, rounded corners, minimum width=27mm, minimum height=10mm, align=center},
+      trans/.style={->, thick},
+      note/.style={font=\small, align=center}
+    ]
+
+    \node[state] (idle) {\texttt{IDLE}\\显示 0000};
+    \node[state, right=of idle] (prepare) {\texttt{PREPARE}\\请求随机数};
+    \node[state, right=of prepare] (wait) {\texttt{WAIT}\\显示 ----};
+    \node[state, below=of wait] (react) {\texttt{REACT}\\显示 $||||$};
+    \node[state, left=of react] (finish) {\texttt{FINISH}\\显示时间};
+    \node[state, below=of finish] (avg) {\texttt{AVG}\\显示平均值};
+    \node[state, below=of react] (fail) {\texttt{FAIL}\\显示 Fail};
+
+    \draw[trans] (idle) -- node[note, above] {START} (prepare);
+    \draw[trans] (prepare) -- node[note, above] {\texttt{random\_valid}\\锁存等待时间} (wait);
+    \draw[trans] (wait) -- node[note, right] {随机等待到达\\清零计数器} (react);
+    \draw[trans] (wait.east) -- ++(12mm,0) |- node[note, near start, right] {提前 REACT} (fail.east);
+
+    \draw[trans] (react) -- node[note, above] {有效 REACT\\$100\,\mathrm{ms}\le t\le5000\,\mathrm{ms}$} (finish);
+    \draw[trans] (react) -- node[note, right] {$t<100\,\mathrm{ms}$\\或 $t>5000\,\mathrm{ms}$} (fail);
+
+    \draw[trans] (finish) -- node[note, left] {START} (avg);
+    \draw[trans] (fail) -- node[note, below] {START} (avg);
+    \draw[trans] (avg.west) -- ++(-12mm,0) |- node[note, near start, left] {START\\下一轮} (prepare.west);
+
+  \end{tikzpicture}
+  \caption{反应测试系统总体状态机}
+  \label{fig:reaction-fsm}
+\end{figure}
+
+\subsubsection{顶层系统模块框图}
+
+顶层模块 \texttt{reaction\_system\_top} 采用同步时序设计。系统时钟 \texttt{clk} 为 50 MHz，复位信号 \texttt{rst\_n} 为低有效复位信号；二者作为全局同步信号连接到所有时序模块，在框图中统一放置在外侧，不逐条绘制连线。START 与 REACT 两个按键分别进入独立的按键去抖与单脉冲模块，生成 \texttt{start\_pulse} 和 \texttt{react\_pulse} 后送入核心模块 \texttt{reaction\_core}。
+
+在顶层视角下，\texttt{reaction\_core} 可视为黑盒。它根据按键脉冲完成随机等待、反应时间计数、失败判断和历史平均值计算，并输出状态、失败码、当前反应时间、平均时间以及历史成绩有效标志。数码管显示模块根据这些信号产生段选和位选输出；蜂鸣器模块根据状态和失败信息产生提示音输出。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+      >=Stealth,
+      node distance=13mm and 18mm,
+      block/.style={draw, rounded corners, minimum width=34mm, minimum height=12mm, align=center},
+      core/.style={draw, rounded corners, very thick, minimum width=45mm, minimum height=32mm, align=center},
+      io/.style={draw, minimum width=27mm, minimum height=9mm, align=center, font=\small},
+      note/.style={draw, dashed, rounded corners, minimum width=36mm, minimum height=12mm, align=center, font=\small},
+      bus/.style={->, thick}
+    ]
+
+    \node[note] (global) {全局同步信号\\\texttt{clk}=50 MHz\\\texttt{rst\_n}};
+
+    \node[io, below left=18mm and 4mm of global] (start_key) {START 按键};
+    \node[io, below=of start_key] (react_key) {REACT 按键};
+
+    \node[block, right=of start_key] (start_db) {START 去抖\\单脉冲};
+    \node[block, right=of react_key] (react_db) {REACT 去抖\\单脉冲};
+
+    \node[core, right=30mm of start_db, yshift=-13mm] (coreblk) {\texttt{reaction\_core}\\核心逻辑黑盒};
+
+    \node[block, right=33mm of coreblk, yshift=13mm] (display) {数码管显示驱动\\\texttt{seg7\_display\_driver}};
+    \node[block, right=33mm of coreblk, yshift=-19mm] (buzzer) {蜂鸣器驱动\\\texttt{buzzer\_driver}};
+
+    \node[io, right=of display] (segio) {A--G, DP\\DIG1--DIG4};
+    \node[io, right=of buzzer] (buzzio) {蜂鸣器 PWM};
+
+    \draw[bus] (start_key) -- node[above, font=\small] {raw} (start_db);
+    \draw[bus] (react_key) -- node[above, font=\small] {raw} (react_db);
+
+    \draw[bus] (start_db.east) -- node[above, font=\small] {\texttt{start\_pulse}} (coreblk.west |- start_db.east);
+    \draw[bus] (react_db.east) -- node[below, font=\small] {\texttt{react\_pulse}} (coreblk.west |- react_db.east);
+
+    \draw[bus] ([yshift=8mm]coreblk.east) -- ++(13mm,0) |- node[pos=0.25, above, font=\small, align=center] {\texttt{state}, \texttt{fail\_code}\\\texttt{reaction\_time\_ms}\\\texttt{avg\_time\_ms}\\\texttt{hist\_available}} (display.west);
+    \draw[bus] ([yshift=-8mm]coreblk.east) -- ++(13mm,0) |- node[pos=0.25, below, font=\small, align=center] {\texttt{state}\\\texttt{fail\_code}} (buzzer.west);
+
+    \draw[bus] (display) -- (segio);
+    \draw[bus] (buzzer) -- (buzzio);
+
+  \end{tikzpicture}
+  }
+  \caption{顶层系统模块框图}
+  \label{fig:top-module-block-diagram}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{顶层模块功能划分}
+  \label{tab:top-module-summary}
+  \begin{tabular}{c|l}
+    \hline
+    模块 & 功能说明 \\
+    \hline
+    \texttt{button\_debounce\_pulse} & 对 START 和 REACT 两个按键分别同步、去抖，并生成单周期按下脉冲 \\
+    \texttt{reaction\_core} & 核心黑盒，完成状态机控制、随机等待、毫秒计数、失败判断和平均值计算 \\
+    \texttt{seg7\_display\_driver} & 根据核心输出的状态、时间和平均值生成四位八段数码管扫描信号 \\
+    \texttt{buzzer\_driver} & 根据核心输出的状态和失败码生成蜂鸣器提示音 \\
+    \hline
+  \end{tabular}
+\end{table}

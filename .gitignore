@@ -1,0 +1,28 @@
+# Local reference material retained on this machine; too large for GitHub.
+reference/
+
+# Deprecated hand-in staging artifacts.
+ASIC_PJ_submit/
+ASIC_PJ_submit.zip
+
+# Regenerable tool/cache debris outside the Vivado project.
+.Xil/
+xsim.dir/
+tmp_xsim_verify/
+*.jou
+*.log
+*.pb
+webtalk*
+xsim*
+xvlog*
+xelab*
+
+# LaTeX auxiliary files.
+*.aux
+*.out
+*.toc
+
+# Keep generated project state under Vivado/ unless explicitly removed.
+!Vivado/**/*.jou
+!Vivado/**/*.log
+!Vivado/**/*.pb

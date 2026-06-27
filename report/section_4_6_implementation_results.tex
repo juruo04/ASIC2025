@@ -1,0 +1,110 @@
+\subsection{综合与实现结果}
+
+本设计在 Vivado 2019.1 中完成综合、布局布线和 bitstream 生成，目标器件为 \texttt{xc7z020clg484-2}。实现结果主要来自 Vivado 在实现阶段生成的资源利用率报告、布局布线后时序报告和功耗估计报告。
+
+\subsubsection{综合后资源利用率}
+
+\begin{table}[htbp]
+  \centering
+  \caption{综合后资源利用率（synth\_1）}
+  \label{tab:synth-utilization}
+  \begin{tabular}{c|r|r|r}
+    \hline
+    Type & Used & Available & Utilisation \\
+    \hline
+    Slice LUTs & 802 & 53200 & 1.51\% \\
+    Slice Registers & 430 & 106400 & 0.40\% \\
+    Block RAM Tile & 0 & 140 & 0.00\% \\
+    DSPs & 0 & 220 & 0.00\% \\
+    Bonded IOB & 17 & 200 & 8.50\% \\
+    BUFGCTRL & 1 & 32 & 3.13\% \\
+    MMCME2\_ADV & 0 & 4 & 0.00\% \\
+    PLLE2\_ADV & 0 & 4 & 0.00\% \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsubsection{实现后资源利用率}
+
+\begin{table}[htbp]
+  \centering
+  \caption{实现后资源利用率（impl\_1）}
+  \label{tab:implementation-utilization}
+  \begin{tabular}{c|r|r|r}
+    \hline
+    Type & Used & Available & Utilisation \\
+    \hline
+    Slice LUTs & 803 & 53200 & 1.51\% \\
+    Slice Registers & 430 & 106400 & 0.40\% \\
+    Block RAM Tile & 0 & 140 & 0.00\% \\
+    DSPs & 0 & 220 & 0.00\% \\
+    Bonded IOB & 17 & 200 & 8.50\% \\
+    BUFGCTRL & 1 & 32 & 3.13\% \\
+    MMCME2\_ADV & 0 & 4 & 0.00\% \\
+    PLLE2\_ADV & 0 & 4 & 0.00\% \\
+    \hline
+  \end{tabular}
+\end{table}
+
+由表~\ref{tab:synth-utilization} 与表~\ref{tab:implementation-utilization} 可见，综合与实现阶段资源结果基本一致，系统主要消耗少量 LUT、触发器和 I/O 资源，未使用 Block RAM 与 DSP，整体资源占用较低。
+
+\subsubsection{时序结果}
+
+\begin{table}[htbp]
+  \centering
+  \caption{布局布线后时序结果}
+  \label{tab:implementation-timing}
+  \begin{tabular}{c|r}
+    \hline
+    Metric & Value \\
+    \hline
+    Worst Negative Slack (WNS) & 0.065 ns \\
+    Total Negative Slack (TNS) & 0.000 ns \\
+    TNS Failing Endpoints & 0 \\
+    Worst Hold Slack (WHS) & 0.102 ns \\
+    Total Hold Slack (THS) & 0.000 ns \\
+    THS Failing Endpoints & 0 \\
+    Worst Pulse Width Slack (WPWS) & 9.500 ns \\
+    Total Pulse Width Slack (TPWS) & 0.000 ns \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{时钟约束摘要}
+  \label{tab:implementation-clock-summary}
+  \begin{tabular}{c|r|r}
+    \hline
+    Clock & Period & Frequency \\
+    \hline
+    \texttt{clk\_50m} & 20.000 ns & 50.000 MHz \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Vivado 时序报告显示所有用户指定时序约束均已满足。根据主时钟周期和 WNS，可估算最大工作频率为
+\[
+F_{\max}=\frac{1000}{20.000-0.065}=50.16\,\mathrm{MHz}.
+\]
+
+\subsubsection{功耗结果}
+
+\begin{table}[htbp]
+  \centering
+  \caption{布局布线后功耗估计}
+  \label{tab:implementation-power}
+  \begin{tabular}{c|r}
+    \hline
+    Metric & Value \\
+    \hline
+    Total On-Chip Power & 0.123 W \\
+    Dynamic Power & 0.017 W \\
+    Device Static Power & 0.106 W \\
+    Junction Temperature & 26.4 $^\circ$C \\
+    Confidence Level & Medium \\
+    \hline
+  \end{tabular}
+\end{table}
+
+综合以上结果，本设计在目标 FPGA 上能够满足 50 MHz 主时钟约束，资源占用和功耗均处于较低水平。

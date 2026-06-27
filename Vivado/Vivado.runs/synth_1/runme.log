@@ -1,0 +1,542 @@
+
+*** Running vivado
+    with args -log reaction_system_top.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source reaction_system_top.tcl
+
+
+****** Vivado v2019.1 (64-bit)
+  **** SW Build 2552052 on Fri May 24 14:49:42 MDT 2019
+  **** IP Build 2548770 on Fri May 24 18:01:18 MDT 2019
+    ** Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+
+source reaction_system_top.tcl -notrace
+Command: synth_design -top reaction_system_top -part xc7z020clg484-2
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Device 21-403] Loading part xc7z020clg484-2
+INFO: Launching helper process for spawning children vivado processes
+INFO: Helper process launched with PID 34560 
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 761.609 ; gain = 183.621
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'reaction_system_top' [D:/FDU/Courses/3B/ASIC/PJ/src/reaction_system_top.v:3]
+	Parameter WAIT_MIN_MS bound to: 500 - type: integer 
+	Parameter WAIT_MAX_MS bound to: 5000 - type: integer 
+	Parameter REACT_MIN_MS bound to: 100 - type: integer 
+	Parameter REACT_MAX_MS bound to: 5000 - type: integer 
+	Parameter MS_COUNTER_W bound to: 13 - type: integer 
+	Parameter RNG_SEED bound to: 16'b0001101000101011 
+	Parameter DEBOUNCE_STABLE_N bound to: 20 - type: integer 
+	Parameter BUTTON_ACTIVE_LEVEL bound to: 1'b1 
+	Parameter CORE_CLK_HZ bound to: 50000000 - type: integer 
+	Parameter DISP_CLK_HZ bound to: 50000000 - type: integer 
+	Parameter DISP_DIGIT_SCAN_HZ bound to: 1000 - type: integer 
+	Parameter SEG_ON_LEVEL bound to: 1'b1 
+	Parameter DIG_ON_LEVEL bound to: 1'b0 
+	Parameter BUZZER_CLK_HZ bound to: 50000000 - type: integer 
+	Parameter BUZZER_ON_LEVEL bound to: 1'b0 
+INFO: [Synth 8-6157] synthesizing module 'button_debounce_pulse' [D:/FDU/Courses/3B/ASIC/PJ/src/button_debounce_pulse.v:3]
+	Parameter STABLE_N bound to: 20 - type: integer 
+	Parameter ACTIVE_LEVEL bound to: 1'b1 
+	Parameter COUNT_W bound to: 5 - type: integer 
+	Parameter STABLE_LAST bound to: 5'b10011 
+INFO: [Synth 8-6155] done synthesizing module 'button_debounce_pulse' (1#1) [D:/FDU/Courses/3B/ASIC/PJ/src/button_debounce_pulse.v:3]
+INFO: [Synth 8-6157] synthesizing module 'reaction_core' [D:/FDU/Courses/3B/ASIC/PJ/src/reaction_core.v:3]
+	Parameter CLK_HZ bound to: 50000000 - type: integer 
+	Parameter WAIT_MIN_MS bound to: 500 - type: integer 
+	Parameter WAIT_MAX_MS bound to: 5000 - type: integer 
+	Parameter REACT_MIN_MS bound to: 100 - type: integer 
+	Parameter REACT_MAX_MS bound to: 5000 - type: integer 
+	Parameter MS_COUNTER_W bound to: 13 - type: integer 
+	Parameter RNG_SEED bound to: 16'b0001101000101011 
+INFO: [Synth 8-6157] synthesizing module 'ms_counter_service' [D:/FDU/Courses/3B/ASIC/PJ/src/ms_counter_service.v:3]
+	Parameter CLK_HZ bound to: 50000000 - type: integer 
+	Parameter COUNTER_W bound to: 13 - type: integer 
+	Parameter MS_TICK_CYCLES_RAW bound to: 50000 - type: integer 
+	Parameter MS_TICK_CYCLES bound to: 50000 - type: integer 
+	Parameter TICK_COUNTER_W bound to: 16 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'ms_counter_service' (2#1) [D:/FDU/Courses/3B/ASIC/PJ/src/ms_counter_service.v:3]
+INFO: [Synth 8-6157] synthesizing module 'lfsr_random_service' [D:/FDU/Courses/3B/ASIC/PJ/src/lfsr_random_service.v:3]
+	Parameter WAIT_MIN_MS bound to: 500 - type: integer 
+	Parameter WAIT_MAX_MS bound to: 5000 - type: integer 
+	Parameter LFSR_SEED bound to: 16'b0001101000101011 
+	Parameter WAIT_SPAN bound to: 4501 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'lfsr_random_service' (3#1) [D:/FDU/Courses/3B/ASIC/PJ/src/lfsr_random_service.v:3]
+INFO: [Synth 8-6157] synthesizing module 'score_history_avg' [D:/FDU/Courses/3B/ASIC/PJ/src/score_history_avg.v:3]
+INFO: [Synth 8-226] default block is never used [D:/FDU/Courses/3B/ASIC/PJ/src/score_history_avg.v:30]
+INFO: [Synth 8-6155] done synthesizing module 'score_history_avg' (4#1) [D:/FDU/Courses/3B/ASIC/PJ/src/score_history_avg.v:3]
+INFO: [Synth 8-6157] synthesizing module 'reaction_controller' [D:/FDU/Courses/3B/ASIC/PJ/src/reaction_controller.v:3]
+	Parameter WAIT_MIN_MS bound to: 500 - type: integer 
+	Parameter WAIT_MAX_MS bound to: 5000 - type: integer 
+	Parameter REACT_MIN_MS bound to: 100 - type: integer 
+	Parameter REACT_MAX_MS bound to: 5000 - type: integer 
+	Parameter MS_COUNTER_W bound to: 13 - type: integer 
+	Parameter ST_IDLE bound to: 3'b000 
+	Parameter ST_PREPARE bound to: 3'b001 
+	Parameter ST_WAIT bound to: 3'b010 
+	Parameter ST_REACT bound to: 3'b011 
+	Parameter ST_FINISH bound to: 3'b100 
+	Parameter ST_AVG bound to: 3'b101 
+	Parameter ST_FAIL bound to: 3'b110 
+	Parameter FAIL_NONE bound to: 2'b00 
+	Parameter FAIL_EARLY bound to: 2'b01 
+	Parameter FAIL_SHORT bound to: 2'b10 
+	Parameter FAIL_SLOW bound to: 2'b11 
+	Parameter DELTA_W bound to: 13 - type: integer 
+	Parameter TIME_SAT_MAX bound to: 13'b1111111111111 
+WARNING: [Synth 8-693] zero replication count - replication ignored [D:/FDU/Courses/3B/ASIC/PJ/src/reaction_controller.v:54]
+INFO: [Synth 8-6155] done synthesizing module 'reaction_controller' (5#1) [D:/FDU/Courses/3B/ASIC/PJ/src/reaction_controller.v:3]
+INFO: [Synth 8-6155] done synthesizing module 'reaction_core' (6#1) [D:/FDU/Courses/3B/ASIC/PJ/src/reaction_core.v:3]
+INFO: [Synth 8-6157] synthesizing module 'seg7_display_driver' [D:/FDU/Courses/3B/ASIC/PJ/src/seg7_display_driver.v:3]
+	Parameter CLK_HZ bound to: 50000000 - type: integer 
+	Parameter DIGIT_SCAN_HZ bound to: 1000 - type: integer 
+	Parameter SEG_ON_LEVEL bound to: 1'b1 
+	Parameter DIG_ON_LEVEL bound to: 1'b0 
+	Parameter ST_IDLE bound to: 3'b000 
+	Parameter ST_PREPARE bound to: 3'b001 
+	Parameter ST_WAIT bound to: 3'b010 
+	Parameter ST_REACT bound to: 3'b011 
+	Parameter ST_FINISH bound to: 3'b100 
+	Parameter ST_AVG bound to: 3'b101 
+	Parameter ST_FAIL bound to: 3'b110 
+	Parameter SCAN_DIV bound to: 12500 - type: integer 
+	Parameter SCAN_DIV_SAFE bound to: 12500 - type: integer 
+	Parameter SCAN_W bound to: 14 - type: integer 
+	Parameter GLYPH_BLANK bound to: 8'b00000000 
+	Parameter GLYPH_0 bound to: 8'b00111111 
+	Parameter GLYPH_1 bound to: 8'b00000110 
+	Parameter GLYPH_2 bound to: 8'b01011011 
+	Parameter GLYPH_3 bound to: 8'b01001111 
+	Parameter GLYPH_4 bound to: 8'b01100110 
+	Parameter GLYPH_5 bound to: 8'b01101101 
+	Parameter GLYPH_6 bound to: 8'b01111101 
+	Parameter GLYPH_7 bound to: 8'b00000111 
+	Parameter GLYPH_8 bound to: 8'b01111111 
+	Parameter GLYPH_9 bound to: 8'b01101111 
+	Parameter GLYPH_DASH bound to: 8'b01000000 
+	Parameter GLYPH_F bound to: 8'b01110001 
+	Parameter GLYPH_A bound to: 8'b01110111 
+	Parameter GLYPH_I bound to: 8'b00000110 
+	Parameter GLYPH_L bound to: 8'b00111000 
+INFO: [Synth 8-6155] done synthesizing module 'seg7_display_driver' (7#1) [D:/FDU/Courses/3B/ASIC/PJ/src/seg7_display_driver.v:3]
+INFO: [Synth 8-6157] synthesizing module 'buzzer_driver' [D:/FDU/Courses/3B/ASIC/PJ/src/buzzer_driver.v:3]
+	Parameter CLK_HZ bound to: 50000000 - type: integer 
+	Parameter BUZZER_ON_LEVEL bound to: 1'b0 
+	Parameter BEEP_MS bound to: 200 - type: integer 
+	Parameter BEEP_CYCLES_RAW bound to: 1410065 - type: integer 
+	Parameter BEEP_CYCLES bound to: 1410065 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'buzzer_driver' (8#1) [D:/FDU/Courses/3B/ASIC/PJ/src/buzzer_driver.v:3]
+INFO: [Synth 8-6155] done synthesizing module 'reaction_system_top' (9#1) [D:/FDU/Courses/3B/ASIC/PJ/src/reaction_system_top.v:3]
+WARNING: [Synth 8-3331] design buzzer_driver has unconnected port fail_code[1]
+WARNING: [Synth 8-3331] design buzzer_driver has unconnected port fail_code[0]
+WARNING: [Synth 8-3331] design seg7_display_driver has unconnected port fail_code[1]
+WARNING: [Synth 8-3331] design seg7_display_driver has unconnected port fail_code[0]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 825.805 ; gain = 247.816
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 825.805 ; gain = 247.816
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 825.805 ; gain = 247.816
+---------------------------------------------------------------------------------
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [D:/FDU/Courses/3B/ASIC/PJ/xdc/reaction_system_gpio1.xdc]
+Finished Parsing XDC File [D:/FDU/Courses/3B/ASIC/PJ/xdc/reaction_system_gpio1.xdc]
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [D:/FDU/Courses/3B/ASIC/PJ/xdc/reaction_system_gpio1.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/reaction_system_top_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/reaction_system_top_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 953.281 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.009 . Memory (MB): peak = 953.281 ; gain = 0.000
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 953.281 ; gain = 375.293
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg484-2
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 953.281 ; gain = 375.293
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:12 ; elapsed = 00:00:13 . Memory (MB): peak = 953.281 ; gain = 375.293
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'reaction_controller'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                 ST_IDLE |                              000 |                              000
+              ST_PREPARE |                              010 |                              001
+                 ST_WAIT |                              110 |                              010
+                ST_REACT |                              101 |                              011
+                 ST_FAIL |                              011 |                              110
+               ST_FINISH |                              100 |                              100
+                  ST_AVG |                              001 |                              101
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'state_reg' using encoding 'sequential' in module 'reaction_controller'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:12 ; elapsed = 00:00:14 . Memory (MB): peak = 953.281 ; gain = 375.293
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     32 Bit       Adders := 1     
+	   2 Input     16 Bit       Adders := 1     
+	   3 Input     15 Bit       Adders := 1     
+	   2 Input     14 Bit       Adders := 2     
+	   3 Input     14 Bit       Adders := 1     
+	   2 Input     13 Bit       Adders := 2     
+	   2 Input      5 Bit       Adders := 2     
+	   2 Input      2 Bit       Adders := 2     
++---XORs : 
+	   4 Input     16 Bit         XORs := 1     
+	   4 Input      1 Bit         XORs := 1     
++---Registers : 
+	               32 Bit    Registers := 1     
+	               16 Bit    Registers := 2     
+	               14 Bit    Registers := 1     
+	               13 Bit    Registers := 8     
+	                8 Bit    Registers := 1     
+	                5 Bit    Registers := 2     
+	                4 Bit    Registers := 1     
+	                3 Bit    Registers := 1     
+	                2 Bit    Registers := 3     
+	                1 Bit    Registers := 14    
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 4     
+	   2 Input     16 Bit        Muxes := 4     
+	   2 Input     14 Bit        Muxes := 1     
+	   2 Input     13 Bit        Muxes := 5     
+	   4 Input     13 Bit        Muxes := 1     
+	   5 Input      7 Bit        Muxes := 2     
+	   2 Input      7 Bit        Muxes := 6     
+	   6 Input      7 Bit        Muxes := 2     
+	   4 Input      7 Bit        Muxes := 1     
+	   2 Input      6 Bit        Muxes := 1     
+	   2 Input      5 Bit        Muxes := 4     
+	   6 Input      4 Bit        Muxes := 1     
+	   2 Input      3 Bit        Muxes := 28    
+	   4 Input      3 Bit        Muxes := 2     
+	   7 Input      3 Bit        Muxes := 4     
+	   2 Input      2 Bit        Muxes := 5     
+	   2 Input      1 Bit        Muxes := 23    
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Hierarchical Component Statistics 
+---------------------------------------------------------------------------------
+Hierarchical RTL Component report 
+Module button_debounce_pulse 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      5 Bit       Adders := 1     
++---Registers : 
+	                5 Bit    Registers := 1     
+	                1 Bit    Registers := 4     
++---Muxes : 
+	   2 Input      5 Bit        Muxes := 2     
+	   2 Input      1 Bit        Muxes := 2     
+Module ms_counter_service 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     16 Bit       Adders := 1     
+	   2 Input     13 Bit       Adders := 1     
++---Registers : 
+	               16 Bit    Registers := 1     
+	               13 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     16 Bit        Muxes := 2     
+	   2 Input     13 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 1     
+Module lfsr_random_service 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     13 Bit       Adders := 1     
++---XORs : 
+	   4 Input     16 Bit         XORs := 1     
+	   4 Input      1 Bit         XORs := 1     
++---Registers : 
+	               16 Bit    Registers := 1     
+	               13 Bit    Registers := 1     
+	                1 Bit    Registers := 2     
++---Muxes : 
+	   2 Input     16 Bit        Muxes := 2     
+	   2 Input      1 Bit        Muxes := 2     
+Module score_history_avg 
+Detailed RTL Component Info : 
++---Adders : 
+	   3 Input     15 Bit       Adders := 1     
+	   2 Input     14 Bit       Adders := 1     
+	   3 Input     14 Bit       Adders := 1     
+	   2 Input      2 Bit       Adders := 1     
++---Registers : 
+	               13 Bit    Registers := 3     
+	                2 Bit    Registers := 1     
++---Muxes : 
+	   4 Input     13 Bit        Muxes := 1     
+Module reaction_controller 
+Detailed RTL Component Info : 
++---Registers : 
+	               13 Bit    Registers := 3     
+	                2 Bit    Registers := 1     
+	                1 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     13 Bit        Muxes := 3     
+	   2 Input      3 Bit        Muxes := 27    
+	   4 Input      3 Bit        Muxes := 2     
+	   7 Input      3 Bit        Muxes := 4     
+	   2 Input      2 Bit        Muxes := 5     
+	   2 Input      1 Bit        Muxes := 12    
+Module seg7_display_driver 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     14 Bit       Adders := 1     
+	   2 Input      2 Bit       Adders := 1     
++---Registers : 
+	               14 Bit    Registers := 1     
+	                8 Bit    Registers := 1     
+	                4 Bit    Registers := 1     
+	                2 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     14 Bit        Muxes := 1     
+	   2 Input     13 Bit        Muxes := 1     
+	   5 Input      7 Bit        Muxes := 2     
+	   2 Input      7 Bit        Muxes := 6     
+	   6 Input      7 Bit        Muxes := 2     
+	   4 Input      7 Bit        Muxes := 1     
+	   2 Input      6 Bit        Muxes := 1     
+	   6 Input      4 Bit        Muxes := 1     
+	   2 Input      3 Bit        Muxes := 1     
+Module buzzer_driver 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     32 Bit       Adders := 1     
++---Registers : 
+	               32 Bit    Registers := 1     
+	                3 Bit    Registers := 1     
+	                1 Bit    Registers := 3     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 4     
+	   2 Input      1 Bit        Muxes := 4     
+---------------------------------------------------------------------------------
+Finished RTL Hierarchical Component Statistics
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+Warning: Parallel synthesis criteria is not met 
+WARNING: [Synth 8-3331] design buzzer_driver has unconnected port fail_code[1]
+WARNING: [Synth 8-3331] design buzzer_driver has unconnected port fail_code[0]
+WARNING: [Synth 8-3331] design seg7_display_driver has unconnected port fail_code[1]
+WARNING: [Synth 8-3331] design seg7_display_driver has unconnected port fail_code[0]
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\u_seg7/glyph_cur_reg[7] )
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:29 ; elapsed = 00:00:31 . Memory (MB): peak = 977.414 ; gain = 399.426
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:36 ; elapsed = 00:00:38 . Memory (MB): peak = 977.414 ; gain = 399.426
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:56 ; elapsed = 00:00:58 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:57 ; elapsed = 00:00:59 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+INFO: [Synth 8-5365] Flop u_seg7/dig_on_reg[3] is being inverted and renamed to u_seg7/dig_on_reg[3]_inv.
+INFO: [Synth 8-5365] Flop u_seg7/dig_on_reg[2] is being inverted and renamed to u_seg7/dig_on_reg[2]_inv.
+INFO: [Synth 8-5365] Flop u_seg7/dig_on_reg[1] is being inverted and renamed to u_seg7/dig_on_reg[1]_inv.
+INFO: [Synth 8-5365] Flop u_seg7/dig_on_reg[0] is being inverted and renamed to u_seg7/dig_on_reg[0]_inv.
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:58 ; elapsed = 00:01:00 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:58 ; elapsed = 00:01:01 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:58 ; elapsed = 00:01:01 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:58 ; elapsed = 00:01:01 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:58 ; elapsed = 00:01:01 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:58 ; elapsed = 00:01:01 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |BUFG   |     1|
+|2     |CARRY4 |   104|
+|3     |LUT1   |    15|
+|4     |LUT2   |   178|
+|5     |LUT3   |   101|
+|6     |LUT4   |   113|
+|7     |LUT5   |   141|
+|8     |LUT6   |   188|
+|9     |FDCE   |   234|
+|10    |FDPE   |    25|
+|11    |IBUF   |     4|
+|12    |OBUF   |    13|
++------+-------+------+
+
+Report Instance Areas: 
++------+-------------------+------------------------+------+
+|      |Instance           |Module                  |Cells |
++------+-------------------+------------------------+------+
+|1     |top                |                        |  1117|
+|2     |  u_buzzer         |buzzer_driver           |    89|
+|3     |  u_core           |reaction_core           |   854|
+|4     |    u_controller   |reaction_controller     |   136|
+|5     |    u_hist         |score_history_avg       |   409|
+|6     |    u_ms_counter   |ms_counter_service      |    84|
+|7     |    u_rng          |lfsr_random_service     |   225|
+|8     |  u_react_debounce |button_debounce_pulse   |    18|
+|9     |  u_seg7           |seg7_display_driver     |   120|
+|10    |  u_start_debounce |button_debounce_pulse_0 |    18|
++------+-------------------+------------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:58 ; elapsed = 00:01:01 . Memory (MB): peak = 1094.867 ; gain = 516.879
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 4 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:50 ; elapsed = 00:00:58 . Memory (MB): peak = 1094.867 ; gain = 389.402
+Synthesis Optimization Complete : Time (s): cpu = 00:00:58 ; elapsed = 00:01:01 . Memory (MB): peak = 1094.867 ; gain = 516.879
+INFO: [Project 1-571] Translating synthesized netlist
+INFO: [Netlist 29-17] Analyzing 104 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1094.867 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+INFO: [Common 17-83] Releasing license: Synthesis
+38 Infos, 9 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:01:05 ; elapsed = 00:01:10 . Memory (MB): peak = 1094.867 ; gain = 797.973
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1094.867 ; gain = 0.000
+WARNING: [Constraints 18-5210] No constraints selected for write.
+Resolution: This message can indicate that there are no constraints for the design, or it can indicate that the used_in flags are set such that the constraints are ignored. This later case is used when running synth_design to not write synthesis constraints to the resulting checkpoint. Instead, project constraints are read when the synthesized design is opened.
+INFO: [Common 17-1381] The checkpoint 'D:/FDU/Courses/3B/ASIC/PJ/Vivado/Vivado.runs/synth_1/reaction_system_top.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file reaction_system_top_utilization_synth.rpt -pb reaction_system_top_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Sun Jun 28 02:37:17 2026...

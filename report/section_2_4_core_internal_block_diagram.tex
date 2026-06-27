@@ -1,0 +1,67 @@
+% 子文件用法：在主 tex 中加入 \input{report/section_2_4_core_internal_block_diagram.tex}
+% 主 tex 导言区需要：\usepackage{tikz}
+% 主 tex 导言区需要：\usepackage{graphicx}
+% 主 tex 导言区需要：\usetikzlibrary{arrows.meta, positioning, fit}
+
+\subsection{核心模块内部框图}
+
+核心模块是系统功能控制中心。它从顶层接收 \texttt{start\_pulse} 和 \texttt{react\_pulse}，内部由控制状态机协调随机等待时间生成、毫秒计数和历史成绩统计。系统时钟 \texttt{clk} 与低有效复位 \texttt{rst\_n} 同步连接到所有子模块，图中以全局同步信号形式标注。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+      >=Stealth,
+      block/.style={draw, rounded corners, minimum width=46mm, minimum height=13mm, align=center},
+      main/.style={draw, rounded corners, very thick, minimum width=82mm, minimum height=20mm, align=center},
+      io/.style={draw, minimum width=28mm, minimum height=9mm, align=center, font=\small},
+      note/.style={draw, dashed, rounded corners, minimum width=36mm, minimum height=12mm, align=center, font=\small},
+      bus/.style={->, thick},
+      label/.style={font=\small, fill=white, inner sep=1pt, align=center}
+    ]
+
+    \node[note] (global) at (-76mm, 43mm) {全局同步信号\\\texttt{clk}\\\texttt{rst\_n}};
+
+    \node[main] (ctrl) at (0, 0) {反应控制状态机\\\texttt{reaction\_controller}};
+    \node[io] (input) at (-72mm, 0) {来自顶层};
+    \node[io] (output) at (82mm, 0) {输出到外部};
+    \node[block] (rng) at (-38mm, 42mm) {随机等待生成\\\texttt{lfsr\_random\_service}};
+    \node[block] (hist) at (38mm, 42mm) {历史平均统计\\\texttt{score\_history\_avg}};
+    \node[block] (counter) at (0, -38mm) {毫秒计数器\\\texttt{ms\_counter\_service}};
+
+    \draw[bus] (input) -- node[label, above] {\texttt{start\_pulse}\\\texttt{react\_pulse}} (ctrl);
+
+    \draw[bus] ([xshift=-34mm]ctrl.north) -- ++(0,12mm) -| node[label, pos=0.25, left] {\texttt{req\_random}} ([xshift=-14mm]rng.south);
+    \draw[bus] ([xshift=4mm]rng.south) -- ++(0,-12mm) -| node[label, pos=0.25, right] {\texttt{random\_valid}\\\texttt{wait\_delay\_ms\_in}} ([xshift=-18mm]ctrl.north);
+
+    \draw[bus] ([xshift=18mm]ctrl.north) -- ++(0,12mm) -| node[label, pos=0.25, left] {\texttt{score\_push\_valid}\\\texttt{score\_push\_time\_ms}} ([xshift=-8mm]hist.south);
+    \draw[bus] ([xshift=14mm]hist.south) -- ++(0,-12mm) -| node[label, pos=0.25, right] {\texttt{avg\_valid}\\\texttt{avg\_time\_ms}} ([xshift=34mm]ctrl.north);
+
+    \draw[bus] ([xshift=12mm]ctrl.south) -- node[label, right] {\texttt{counter\_clr}\\\texttt{counter\_en}} ([xshift=12mm]counter.north);
+    \draw[bus] ([xshift=-12mm]counter.north) -- node[label, left] {\texttt{ms\_counter}} ([xshift=-12mm]ctrl.south);
+
+    \draw[bus] (ctrl) -- node[label, above] {\texttt{state} / \texttt{fail\_code}\\\texttt{reaction\_time\_ms} / \texttt{avg\_time\_ms}\\\texttt{hist\_available} / \texttt{ready}} (output);
+
+  \end{tikzpicture}
+  }
+  \caption{\texttt{reaction\_core} 内部模块通信框图}
+  \label{fig:core-internal-block-diagram}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{核心模块内部信号说明}
+  \label{tab:core-internal-signal-summary}
+  \begin{tabular}{c|l}
+    \hline
+    信号 & 功能说明 \\
+    \hline
+    \texttt{req\_random} & 控制器向随机模块请求新的随机等待时间 \\
+    \texttt{random\_valid} / \texttt{wait\_delay\_ms\_in} & 随机模块返回有效标志和等待时间 \\
+    \texttt{counter\_clr} / \texttt{counter\_en} & 控制器清零或使能毫秒计数器 \\
+    \texttt{ms\_counter} & 毫秒计数器返回当前计时值 \\
+    \texttt{score\_push\_valid} / \texttt{score\_push\_time\_ms} & 有效反应完成后写入历史成绩 \\
+    \texttt{avg\_valid} / \texttt{avg\_time\_ms} & 历史模块返回平均值有效标志和平均反应时间 \\
+    \hline
+  \end{tabular}
+\end{table}
