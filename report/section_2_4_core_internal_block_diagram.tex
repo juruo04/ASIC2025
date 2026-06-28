@@ -7,7 +7,7 @@
 
 核心模块是系统功能控制中心。它从顶层接收 \texttt{start\_pulse} 和 \texttt{react\_pulse}，内部由控制状态机协调随机等待时间生成、毫秒计数和历史成绩统计。系统时钟 \texttt{clk} 与低有效复位 \texttt{rst\_n} 同步连接到所有子模块，图中以全局同步信号形式标注。
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
@@ -48,7 +48,7 @@
   \label{fig:core-internal-block-diagram}
 \end{figure}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{核心模块内部信号说明}
   \label{tab:core-internal-signal-summary}

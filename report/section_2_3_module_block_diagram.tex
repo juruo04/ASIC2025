@@ -7,7 +7,7 @@
 
 该状态机是系统测试流程的总控逻辑，统一描述从空闲、启动、随机等待、有效反应、结果显示到平均值查看的完整闭环。状态机包含 \texttt{IDLE}、\texttt{PREPARE}、\texttt{WAIT}、\texttt{REACT}、\texttt{FINISH}、\texttt{AVG} 和 \texttt{FAIL} 七个状态。
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \begin{tikzpicture}[
       >=Stealth,
@@ -48,7 +48,7 @@
 
 在顶层视角下，\texttt{reaction\_core} 可视为黑盒。它根据按键脉冲完成随机等待、反应时间计数、失败判断和历史平均值计算，并输出状态、失败码、当前反应时间、平均时间以及历史成绩有效标志。数码管显示模块根据这些信号产生段选和位选输出；蜂鸣器模块根据状态和失败信息产生提示音输出。
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
@@ -95,7 +95,7 @@
   \label{fig:top-module-block-diagram}
 \end{figure}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{顶层模块功能划分}
   \label{tab:top-module-summary}
